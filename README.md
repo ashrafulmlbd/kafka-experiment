@@ -4,6 +4,15 @@
 
 Ref: https://kafka.apache.org/quickstart
 
+## Sample architecture diagram of Endpoint: /producer/chat/chat : <br/><br/>
+![architecture](./docs/producer-consumer-architecture.png)
+
+
+## Prerequisite Env
+- Apache Maven: 3.8.4 (latest)
+- Java version: 11
+- Apache kafka: 3.1.0(latest)
+
 ## Run project : 
 **Start the kafka environment first:** 
 
@@ -28,10 +37,6 @@ $ bin/kafka-server-start.sh config/server.properties
 
 4. From consumer application console, we can see our consumer application consume that message from kafka topic \
    ![screenshot](./docs/consumer-console.png)
-
-**Sample architecture diagram of (/chat) :** \
-   ![architecture](./docs/producer-consumer-architecture.png)
-
 
 ## Some note on kafka
 **Start the ZooKeeper service :** \
