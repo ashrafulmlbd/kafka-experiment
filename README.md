@@ -1,6 +1,6 @@
 # kafka-Experiment
 
-##Kafka Installation on MAC:
+## Kafka Installation on MAC:
 
 Ref: https://kafka.apache.org/quickstart
 
