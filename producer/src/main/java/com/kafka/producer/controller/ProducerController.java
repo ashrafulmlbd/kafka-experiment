@@ -3,6 +3,8 @@ package com.kafka.producer.controller;
 import com.kafka.producer.model.ChatMessage;
 import com.kafka.producer.service.ProducerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -13,9 +15,9 @@ public class ProducerController {
     private final ProducerService producerService;
 
     @PostMapping(value = "/chat")
-    public String produceChatMsg(@RequestBody ChatMessage msg){
+    public ResponseEntity<?> produceChatMsg(@RequestBody ChatMessage msg){
         producerService.send(msg);
-        return "Published Successfully";
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

@@ -23,21 +23,25 @@ Start the Kafka broker service: \
 $ bin/kafka-server-start.sh config/server.properties
 
 **Run producer and consumer application:** 
-1. producer application runs on 8080 \
+- producer application runs on 8080 \
    $ cd producer/ \
-   $ mvn spring-boot:run -DskipTests
+   $ mvn spring-boot:run -DskipTests <br/> <br/>
 
-2. consumer application runs on 8081 \
+- consumer application runs on 8081 \
    $ cd producer/ \
-   $ mvn spring-boot:run -DskipTests
+   $ mvn spring-boot:run -DskipTests <br/> <br/>
 
-3. Make a POST request to producer(8080) : \
+- Make a POST request to producer(8080) : \
    $ curl -X POST -H "Content-Type: application/json" \
-   -d '{"message": "whats up?", "messageId": 10, "msgFrom":"ashraf", "msgTo":"Dip"}'  http://localhost:8080/producer/chat
+   -d '{"message": "whats up?", "messageId": 10, "msgFrom":"ashraf", "msgTo":"Dip"}'  http://localhost:8080/producer/chat <br/> <br/>
 
-4. From consumer application console, we can see our consumer application consume that message from kafka topic \
+- From consumer application console, we can see our consumer application consume that message from kafka topic \
    ![screenshot](./docs/consumer-console.png)
 
+## Sample integration test on producer application
+- Make sure Kafka environment(zookeeper, broker) is running 
+- $ cd producer/
+- $ mvn test
 ## Some note on kafka
 **Start the ZooKeeper service :** \
 $ bin/zookeeper-server-start.sh config/zookeeper.properties \
