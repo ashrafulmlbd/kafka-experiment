@@ -15,12 +15,9 @@ import static com.kafka.consumer.constants.ConsumerConstants.GROUP_ID;
 @Service
 public class ConsumerListenerService {
 
-    @Value("${topic.name.consumer")
-    private String topicName;
-
     @KafkaListener(topics = "${topic.name.consumer}", groupId = GROUP_ID)
     public void consume(ConsumerRecord<String, ChatMessage> payload){
-        log.info("Topic: {}", topicName);
+        log.info("Topic: {}", payload.topic());
         log.info("key: {}", payload.key());
         log.info("Headers: {}", payload.headers());
         log.info("Partition: {}", payload.partition());

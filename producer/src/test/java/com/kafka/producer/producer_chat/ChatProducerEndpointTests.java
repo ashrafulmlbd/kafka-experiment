@@ -22,11 +22,26 @@ public class ChatProducerEndpointTests extends IntegrationTests {
     private ObjectMapper objectMapper;
 
     private final String endpoint = "/producer/chat";
+    private final String genericMsgProducerEndpoint = "/producer/generic/chat";
 
     @Test
     @DisplayName("Should throw 200 when produce msg to broker")
     public void should_Throw200_When_ProduceChatMessage() throws Exception {
         mockMvc.perform(post(endpoint)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                getChatMsgObj())
+                        )
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Should throw 200 when produce msg to broker using generic producer service")
+    public void should_Throw200_When_ProduceChatMessageUsingGenericProducerService() throws Exception {
+        mockMvc.perform(post(genericMsgProducerEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
