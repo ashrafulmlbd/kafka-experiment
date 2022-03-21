@@ -4,6 +4,9 @@
 
 Ref: https://kafka.apache.org/quickstart
 
+## Confluent Platform Installation:
+Ref: https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#ce-quickstart
+
 ## Sample architecture diagram of Endpoint: [/producer/chat/chat] [/producer/generic/chat] : <br/><br/>
 ![architecture](./docs/producer-consumer-architecture.png)
 
@@ -12,8 +15,9 @@ Ref: https://kafka.apache.org/quickstart
 - Apache Maven: 3.8.4 (latest)
 - Java version: 11
 - Apache kafka: 3.1.0(latest)
+- Confluent Platform for schema registry and avro serializer and deserializer
 
-## Run project : 
+## Run project normal producer-consumer: 
 **Start the kafka environment first:** 
 
 Start the ZooKeeper service: \
@@ -27,7 +31,7 @@ $ bin/kafka-server-start.sh config/server.properties
    $ cd producer/ \
    $ mvn spring-boot:run -DskipTests <br/> <br/>
 
-- consumer application runs on 8081 \
+- consumer application runs on 8082 \
    $ cd producer/ \
    $ mvn spring-boot:run -DskipTests <br/> <br/>
 
@@ -41,17 +45,59 @@ $ bin/kafka-server-start.sh config/server.properties
 
 - From consumer application console, we can see our consumer application consume that message from kafka topic \
    ![screenshot](./docs/consumer-console.png)
+
+## Run project to test schema registry(avro serializer and deserializer) :
+
+**Using Manually:** <br/><br/>
+Start the ZooKeeper service: \
+$ bin/zookeeper-server-start.sh config/zookeeper.properties
+
+Start the Kafka broker service: \
+$ bin/kafka-server-start.sh config/server.properties
+
+Start Schema Registry : \
+$ cd confluent-7.0.1
+$ bin/schema-registry-start ./etc/schema-registry/schema-registry.properties <br/>
+
+**OR Using confluent platform** <br/><br/>
+
+Run below command to up everything including zookeeper,kafka and schema registry :<br/>
+$ confluent local services start <br/> <br/>
+
+**Run producer and consumer application:**
+- producer application(profile=avro) runs on 8080 and  \
+  $ cd producer/ \
+  $ mvn spring-boot:run -Dspring-boot.run.profiles=avro <br/> <br/>
+
+- consumer application(profiles=avro) runs on 8082 \
+  $ cd producer/ \
+  $ mvn spring-boot:run -Dspring-boot.run.profiles=avro <br/> <br/>
+
+- Make a POST request to check avro and schema registry: \
+  $ curl -X POST -d 'name=vik&age=33' http://localhost:8080/producer/test/avro
+  <br/> <br/>
+
+- From consumer application console, we can see our consumer application consume that message from kafka topic \
+  ![screenshot](./docs/consumer-console.png)
+
 ## Producer application Endpoints:
-| Method Type | Endpoint     | RequestBody                                                                         | Description                                    |
-|-------------|--------------|-------------------------------------------------------------------------------------|------------------------------------------------|
-| POST        | /producer/chat | {"message":"hi test ","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"}              | Using ProducerService to send message to kafka |
-| POST        | /producer/generic/chat | {"message":"hi test new generic new","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"} | Using GenericProducerService  to send message to kafka                |
+| Method Type | Endpoint               | RequestBody                                                                           | Description                                               |
+|-------------|------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| POST        | /producer/chat         | {"message":"hi test ","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"}                | Using ProducerService to send message to kafka            |
+| POST        | /producer/generic/chat | {"message":"hi test new generic new","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"} | Using GenericProducerService  to send message to kafka    |
+| POST        | /producer/test/avro    | /producer/test/avro?name=vik&age=33                                                   | Test Schema registry and avro serializer and deserializer |
 
 
 ## Sample integration test on producer application
 - Make sure Kafka environment(zookeeper, broker) is running 
 - $ cd producer/
 - $ mvn test
+
+## Topic Experimented
+- Producer
+- Consumer
+- Avro
+- Schema Registry
 
 ## Some command note on kafka
 

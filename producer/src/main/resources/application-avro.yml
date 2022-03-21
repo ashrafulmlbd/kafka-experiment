@@ -1,0 +1,24 @@
+topic:
+  name:  avro_producer_consumer
+  partitions-num: 3
+  replication-factor: 1
+  avro-person-topic-name: person_topics
+  avro-person-partitions-num: 3
+  avro-person-replication-factor: 1
+server:
+  port: 8080
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    properties:
+      schema.registry.url: http://localhost:8081
+    producer:
+      key-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+    template:
+      default-topic:
+logging:
+  level:
+    root: info

@@ -1,0 +1,15 @@
+{
+  "namespace": "com.kafka.consumer",
+  "type": "record",
+  "name": "Person",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    }
+  ]
+}

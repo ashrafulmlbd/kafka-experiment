@@ -1,0 +1,21 @@
+topic:
+  name: chat_topics
+  avro-person: person_topics
+server:
+  port: 8082
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    properties:
+      schema.registry.url: http://localhost:8081
+    consumer:
+      group-id: group_id
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    template:
+      default-topic:
+logging:
+  level:
+    root: info

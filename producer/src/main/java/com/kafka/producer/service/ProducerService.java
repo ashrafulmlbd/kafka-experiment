@@ -16,7 +16,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @RequiredArgsConstructor
 public class ProducerService {
 
-    @Value("${topic.name.producer}")
+    @Value("${topic.name}")
     private String topicName;
 
     private final KafkaTemplate<String, ChatMessage> kafkaTemplate;

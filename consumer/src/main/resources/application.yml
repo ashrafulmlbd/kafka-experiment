@@ -1,0 +1,25 @@
+topic:
+  name: chat_topics
+  avro-person-topic-name: person_topics
+server:
+  port: 8082
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    consumer:
+      group-id: group_id
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            value:
+              default:
+                type: 'com.kafka.consumer.model.ChatMessage'
+    template:
+      default-topic:
+logging:
+  level:
+    root: info
