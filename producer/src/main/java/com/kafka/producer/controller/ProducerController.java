@@ -23,7 +23,6 @@ public class ProducerController {
     private String avroTestTopic;
 
     private final ProducerService producerService;
-
     private final GenericProducerService<String, ChatMessage> genericProducerService;
     private final GenericProducerService<String, Person> personGenericProducerService;
 
