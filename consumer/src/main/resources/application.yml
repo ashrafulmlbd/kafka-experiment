@@ -1,3 +1,4 @@
+serializer.avro: F
 topic:
   name: chat_topics
   avro-person-topic-name: person_topics

@@ -74,7 +74,7 @@ $ confluent local services start <br/> <br/>
   $ mvn spring-boot:run -Dspring-boot.run.profiles=avro <br/> <br/>
 
 - Make a POST request to check avro and schema registry: \
-  $ curl -X POST -d 'name=vik&age=33' http://localhost:8080/producer/test/avro
+  $ curl -X POST -d 'name=vik&age=33' http://localhost:8080/person/test/avro
   <br/> <br/>
 
 - From consumer application console, we can see our consumer application consume that message from kafka topic \
@@ -85,7 +85,7 @@ $ confluent local services start <br/> <br/>
 |-------------|------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|
 | POST        | /producer/chat         | {"message":"hi test ","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"}                | Using ProducerService to send message to kafka            |
 | POST        | /producer/generic/chat | {"message":"hi test new generic new","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"} | Using GenericProducerService  to send message to kafka    |
-| POST        | /producer/test/avro    | /producer/test/avro?name=vik&age=33                                                   | Test Schema registry and avro serializer and deserializer |
+| POST        | /person/test/avro      | /person/test/avro?name=vik&age=33                                                     | Test Schema registry and avro serializer and deserializer |
 
 
 ## Sample integration test on producer application
@@ -99,6 +99,74 @@ $ confluent local services start <br/> <br/>
 - Avro
 - Schema Registry
 
+## Kafka connect
+Source Connector Configuration :
+
+For the source connector, the reference configuration is available at $CONFLUENT_HOME/etc/kafka/connect-file-source.properties:
+
+name=local-file-source
+connector.class=FileStreamSource
+tasks.max=1
+topic=connect-test
+file=connect-data-test.txt
+
+
+For this to work then, let's create a basic file with some content:
+echo -e "Dip\nashraf\nmonstarlab\nkafka\ntesting\n" > $CONFLUENT_HOME/connect-data-test.txt
+
+
+
+Sink Connector Configuration :
+
+For our sink connector, we'll use the reference configuration at $CONFLUENT_HOME/etc/kafka/connect-file-sink.properties:
+
+name=local-file-sink
+connector.class=FileStreamSink
+tasks.max=1
+file=connecttest.sink.txt
+topics=connect-test
+
+
+
+Worker Config :
+
+Finally, we have to configure the Connect worker, which will integrate our two connectors and do the work of reading from the source connector and writing to the sink connector.
+
+For that, we can use $CONFLUENT_HOME/etc/kafka/connect-standalone.properties:
+
+bootstrap.servers=localhost:9092
+key.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+key.converter.schemas.enable=false
+value.converter.schemas.enable=false
+offset.storage.file.filename=/tmp/connect.offsets
+offset.flush.interval.ms=10000
+plugin.path=/share/java
+
+
+Kafka Connect in Standalone Mode :
+
+And with that, we can start our first connector setup:
+
+$CONFLUENT_HOME/bin/connect-standalone \
+$CONFLUENT_HOME/etc/kafka/connect-standalone.properties \
+$CONFLUENT_HOME/etc/kafka/connect-file-source.properties \
+$CONFLUENT_HOME/etc/kafka/connect-file-sink.properties
+
+
+we can inspect the content of the topic using the command line:
+
+$CONFLUENT_HOME/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic connect-test --from-beginning
+
+{"schema":{"type":"string","optional":false},"payload":"foo"}
+{"schema":{"type":"string","optional":false},"payload":"bar"}
+
+
+And, if we have a look at the folder $CONFLUENT_HOME, we can see that a file test.sink.txt was created here:
+
+cat $CONFLUENT_HOME/connecttest.sink.txt
+foo
+bar
 ## Some command note on kafka
 
 | Description                                                                                                                                                                                                                                                             | Command                                                                                                                                                                                                                               |

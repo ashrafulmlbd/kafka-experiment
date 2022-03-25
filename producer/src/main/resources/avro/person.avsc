@@ -1,5 +1,5 @@
 {
-  "namespace": "com.kafka.producer",
+  "namespace": "com.kafka.producer.model",
   "type": "record",
   "name": "Person",
   "version" : "1",
