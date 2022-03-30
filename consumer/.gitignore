@@ -40,3 +40,4 @@ bin/
 ### Docker ###
 env_file.env
 docker/
+src/main/java/com/kafka/consumer/model/avro/

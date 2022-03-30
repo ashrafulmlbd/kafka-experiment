@@ -40,3 +40,5 @@ bin/
 ### Docker ###
 env_file.env
 docker/
+src/main/java/com/kafka/producer/model/avro/
+src/main/resources/META-INF/

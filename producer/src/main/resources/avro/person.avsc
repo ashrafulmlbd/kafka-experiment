@@ -1,5 +1,5 @@
 {
-  "namespace": "com.kafka.producer.model",
+  "namespace": "com.kafka.producer.model.avro",
   "type": "record",
   "name": "Person",
   "version" : "1",

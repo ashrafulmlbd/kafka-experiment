@@ -100,8 +100,18 @@ $ confluent local services start <br/> <br/>
 - Schema Registry
 
 ## Kafka connect
-Source Connector Configuration :
 
+Kafka Connect is a framework for connecting Kafka with external systems such as databases, key-value stores, search indexes, and file systems, using so-called Connectors.
+Kafka Connectors are ready-to-use components, which can help us to import data from external systems into Kafka topics and export data from Kafka topics into external systems.
+
+A source connector collects data from a system. Source systems can be entire databases, streams tables, or message brokers. A source connector could also collect metrics from application servers into Kafka topics, making the data available for stream processing with low latency.
+
+A sink connector delivers data from Kafka topics into other systems, which might be indexes such as Elasticsearch, batch systems such as Hadoop, or any kind of database. <br/> <br/>
+
+**FileStream Connectors example :** <br/><br/>
+![screenshot](./docs/filesource-sink.png)
+
+**Source Connector Configuration :** <br/>
 For the source connector, the reference configuration is available at $CONFLUENT_HOME/etc/kafka/connect-file-source.properties:
 
 name=local-file-source
@@ -116,7 +126,7 @@ echo -e "Dip\nashraf\nmonstarlab\nkafka\ntesting\n" > $CONFLUENT_HOME/connect-da
 
 
 
-Sink Connector Configuration :
+**Sink Connector Configuration :**
 
 For our sink connector, we'll use the reference configuration at $CONFLUENT_HOME/etc/kafka/connect-file-sink.properties:
 
@@ -128,7 +138,7 @@ topics=connect-test
 
 
 
-Worker Config :
+**Worker Config :**
 
 Finally, we have to configure the Connect worker, which will integrate our two connectors and do the work of reading from the source connector and writing to the sink connector.
 
@@ -141,10 +151,10 @@ key.converter.schemas.enable=false
 value.converter.schemas.enable=false
 offset.storage.file.filename=/tmp/connect.offsets
 offset.flush.interval.ms=10000
-plugin.path=/share/java
+plugin.path=share/filestream-connectors
 
 
-Kafka Connect in Standalone Mode :
+**Kafka Connect in Standalone Mode :**
 
 And with that, we can start our first connector setup:
 
@@ -167,6 +177,84 @@ And, if we have a look at the folder $CONFLUENT_HOME, we can see that a file tes
 cat $CONFLUENT_HOME/connecttest.sink.txt
 foo
 bar
+
+<br/> Write data on connect-data-test: <br/>
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "foo\nbar\n" >> source-log.txt <br/>
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kaka\nvalo\n" >> source-log.txt <br/>
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> source-log.txt <br/>
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt <br/>
+
+**MySQL into ElasticSearch using Debezium, Kafka, and Confluent JDBC Sink Connector :**  <br/> <br/>
+![screenshot](./docs/mysql-elk.drawio.png)
+
+<br/>**Debezium MySql connectors :**
+
+1. Configure Mysql docker compose
+2. Install debezium plugin in confluent hub
+   https://docs.confluent.io/debezium-connect-mysql-source/current/overview.html
+
+- cd etc/kafka/
+- cp connect-distributed.properties debezium.properties
+- http://localhost:9021 [control-center]
+
+3. ElasticSearch Service
+- Write single-node elastic search and kibana docker compose file
+- $ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
+
+4. Start confluent platform : $ confluent local services start
+5. Stop Connect service : $ confluent local services connect stop
+6. Start connect : $ bin/connect-distributed etc/kafka/debezium.properties
+7. Start Mysql container
+8. Start elasticsearch container
+9. Registering Kafka
+- Registering connector debezium configuration via Rest API(Make a post request)
+
+```
+  Endpoint : localhost:8083/connectors
+  BODY:
+  {
+  "name": "inventory-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "tasks.max": "1",
+    "database.hostname": "localhost",
+    "database.port": "3307",
+    "database.user": "root",
+    "database.password": "password",
+    "database.server.id": "184054",
+    "database.server.name": "dbserver1",
+    "database.whitelist": "inventory",
+    "database.history.kafka.bootstrap.servers": "localhost:9092",
+    "database.history.kafka.topic": "schema-changes.inventory"
+  }
+}
+  ```
+- ElasticsearchSinkConnector configuration via Rest API(Make a post request)
+```
+{
+    "name": "elastic-sink",
+    "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "dbserver1.inventory.customers",
+    "connection.url": "http://localhost:9200",
+    "transforms": "unwrap,key",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.key.field": "id",
+    "key.ignore": "false",
+    "type.name": "customer",
+    "name": "elastic-sink"
+    },
+    "tasks": [],
+    "type": "sink"
+}
+```
+10. Make some update in database. Changes can be viewed from Kibana(KQL).
+    ![screenshot](./docs/kibana-screenshot.png)
+11. We can also configure kibana dashboard for checking the changes.
+    ![screenshot](./docs/kibana-dashboard.png)
+
 ## Some command note on kafka
 
 | Description                                                                                                                                                                                                                                                             | Command                                                                                                                                                                                                                               |
