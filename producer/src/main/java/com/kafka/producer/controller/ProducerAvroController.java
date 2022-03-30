@@ -1,6 +1,6 @@
 package com.kafka.producer.controller;
 
-import com.kafka.producer.model.Person;
+import com.kafka.producer.model.avro.Person;
 import com.kafka.producer.service.GenericProducerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

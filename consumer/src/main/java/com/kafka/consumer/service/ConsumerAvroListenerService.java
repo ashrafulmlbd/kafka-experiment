@@ -1,6 +1,6 @@
 package com.kafka.consumer.service;
 
-import com.kafka.consumer.model.Person;
+import com.kafka.consumer.model.avro.Person;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

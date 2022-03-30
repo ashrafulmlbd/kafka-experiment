@@ -40,3 +40,4 @@ bin/
 ### Docker ###
 env_file.env
 docker/
+kafka-connect/mysql/data/

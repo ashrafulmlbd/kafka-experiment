@@ -1,5 +1,5 @@
 {
-  "namespace": "com.kafka.consumer.model",
+  "namespace": "com.kafka.consumer.model.avro",
   "type": "record",
   "name": "Person",
   "fields": [
