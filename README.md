@@ -184,7 +184,7 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kaka\nvalo\n" >> source-log.t
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> source-log.txt <br/>
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt <br/>
 
-**MySQL into ElasticSearch using Debezium, Kafka, and Confluent JDBC Sink Connector :**  <br/> <br/>
+**MySQL to ElasticSearch using Debezium, Kafka, and Confluent JDBC Sink Connector :**  <br/> <br/>
 ![screenshot](./docs/mysql-elk.drawio.png)
 
 <br/>**Debezium MySql connectors :**
@@ -204,8 +204,8 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 4. Start confluent platform : $ confluent local services start
 5. Stop Connect service : $ confluent local services connect stop
 6. Start connect : $ bin/connect-distributed etc/kafka/debezium.properties
-7. Start Mysql container
-8. Start elasticsearch container
+7. Start Mysql container(From kafka-connect/mysql directory) :  $ docker-compose up -d
+8. Start elasticsearch container(From kafka-connect/elasticsearch directory) : $ docker-compose up -d
 9. Registering Kafka
 - Registering connector debezium configuration via Rest API(Make a post request)
 
