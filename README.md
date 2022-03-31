@@ -285,3 +285,8 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 |  **Replay all messages by resetting offsets :**| To earliest: $ bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --to-earliest --execute --topic first_topic                                                                |
 | **Shift by forward or backward(-):**| $ bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --shift-by 2 --execute --topic first_topic                                                                                                                                                                                                                                      |
 |  **Kafka documentations along with the configurations :**|  https://kafka.apache.org/documentation/
+
+## References
+
+https://docs.confluent.io/platform/current/connect/references/restapi.html
+https://docs.confluent.io/platform/current/connect/logging.html

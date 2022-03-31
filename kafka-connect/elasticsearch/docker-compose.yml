@@ -8,6 +8,8 @@ services:
     restart: on-failure
     environment:
       discovery.type: single-node
+    volumes:
+        - ./es-data:/usr/share/elasticsearch/data
   kibana:
     image: docker.elastic.co/kibana/kibana:7.7.0
     depends_on:
@@ -17,3 +19,5 @@ services:
     restart: on-failure
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    volumes:
+      - ./kibana-data:/usr/share/kibana/data

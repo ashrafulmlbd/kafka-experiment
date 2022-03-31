@@ -41,3 +41,5 @@ bin/
 env_file.env
 docker/
 kafka-connect/mysql/data/
+kafka-connect/elasticsearch/es-data/
+kafka-connect/elasticsearch/kibana-data/
