@@ -183,8 +183,9 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "foo\nbar\n" >> source-log.txt
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kaka\nvalo\n" >> source-log.txt <br/>
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> source-log.txt <br/>
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt <br/>
+<br/><br/>
 
-**MySQL to ElasticSearch using Debezium, Kafka, and Confluent JDBC Sink Connector :**  <br/> <br/>
+## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector : <br/> <br/>
 ![screenshot](./docs/mysql-elk.drawio.png)
 
 <br/>**Debezium MySql Source connectors :**
