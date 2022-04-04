@@ -187,27 +187,24 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 **MySQL to ElasticSearch using Debezium, Kafka, and Confluent JDBC Sink Connector :**  <br/> <br/>
 ![screenshot](./docs/mysql-elk.drawio.png)
 
-<br/>**Debezium MySql connectors :**
+<br/>**Debezium MySql Source connectors :**
 
-1. Configure Mysql docker compose
-2. Install debezium plugin in confluent hub
-   https://docs.confluent.io/debezium-connect-mysql-source/current/overview.html
+- Install debezium mysql connector : $ confluent-hub install debezium/debezium-connector-mysql:latest
 
-- cd etc/kafka/
-- cp connect-distributed.properties debezium.properties
+- $ cd $CONFLUENT_HOME/etc/kafka/
+- $ cp connect-distributed.properties debezium.properties
 - http://localhost:9021 [control-center]
 
-3. ElasticSearch Service
-- Write single-node elastic search and kibana docker compose file
-- $ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
+<br/>**ElasticSearch Sink connectors :**
+- Install ElasticSearch Sink Connectors : $ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
 
-4. Start confluent platform : $ confluent local services start
-5. Stop Connect service : $ confluent local services connect stop
-6. Start connect : $ bin/connect-distributed etc/kafka/debezium.properties
-7. Start Mysql container(From kafka-connect/mysql directory) :  $ docker-compose up -d
-8. Start elasticsearch container(From kafka-connect/elasticsearch directory) : $ docker-compose up -d
-9. Registering Kafka
-- Registering connector debezium configuration via Rest API(Make a post request)
+<br/>**Test Mysql source and ElasticSearch Sink connectors :**
+- Start confluent platform : $ confluent local services start 
+- Stop Connect service : $ confluent local services connect stop
+- Start connect : $ bin/connect-distributed etc/kafka/debezium.properties
+- Start Mysql container(From kafka-connect/mysql directory) :  $ docker-compose up -d
+- Start elasticsearch container(From kafka-connect/elasticsearch directory) : $ docker-compose up -d
+- Registering Mysql Source connector configuration via Rest API(Make a post request)
 
 ```
   Endpoint : localhost:8083/connectors
