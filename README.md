@@ -1,12 +1,36 @@
 # kafka-Experiment
 
-## Kafka Installation on MAC:
+## Kafka Installation on MAC
 
 Ref: https://kafka.apache.org/quickstart
 
-## Confluent Platform Installation:
-Ref: https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#ce-quickstart
+## Confluent Platform Installation
+1. Download the confluent-7.0.2.tar.gz package from the [Confluent package archive](https://packages.confluent.io/archive/7.0/?_ga=2.264322063.1075689171.1649068749-1675562167.1646719441).
+2. Use the tar command to decompress the archive file.
 
+```$ tar -xvf confluent-7.0.2.tar.gz```
+<br/>
+The tar command creates the confluent-7.0.2 directory, which is the Confluent home directory. Run the ls command to examine its contents:
+
+```$ls -al confluent-7.0.2```
+<br/>
+Your output should resemble:
+
+```-rw-r--r--  1 jim jim  871 May 19 21:36 README
+drwxr-xr-x  3 jim jim 4096 May 19 20:25 bin
+drwxr-xr-x 17 jim jim 4096 May 19 20:25 etc
+drwxr-xr-x  3 jim jim 4096 May 19 20:21 lib
+drwxr-xr-x  3 jim jim 4096 May 19 20:25 libexec
+drwxr-xr-x  7 jim jim 4096 May 19 20:25 share
+drwxr-xr-x  2 jim jim 4096 May 19 21:36 src
+
+```
+3. Set the environment variable for the Confluent Platform home directory.
+```$ export CONFLUENT_HOME=confluent-7.0.2```
+4. Add the Confluent Platform bin directory to your PATH.
+```export PATH=$PATH:$CONFLUENT_HOME/bin```
+5. Test your installation by running the confluent command:
+``confluent --help``
 ## Sample architecture diagram of Endpoint: [/producer/chat/chat] [/producer/generic/chat] : <br/><br/>
 ![architecture](./docs/producer-consumer-architecture.png)
 
@@ -188,13 +212,112 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 ## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector : <br/> <br/>
 ![screenshot](./docs/mysql-elk.drawio.png)
 
+<br/>
+
+**Prerequisite :**
+- Java 8 or Java 11
+- [Confluent Platform Installation](#confluent-platform-installation)
+
 <br/>**Debezium MySql Source connectors :**
 
-- Install debezium mysql connector : $ confluent-hub install debezium/debezium-connector-mysql:latest
+- Install debezium mysql connector : 
+```$ confluent-hub install debezium/debezium-connector-mysql:latest```
 
 - $ cd $CONFLUENT_HOME/etc/kafka/
-- $ cp connect-distributed.properties debezium.properties
-- http://localhost:9021 [control-center]
+- ```$ cp connect-distributed.properties debezium.properties```
+
+<br/>**debezium.properties :**
+```##
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##
+
+# This file contains some of the configurations for the Kafka Connect distributed worker. This file is intended
+# to be used with the examples, and some settings may differ from those used in a production system, especially
+# the `bootstrap.servers` and those specifying replication factors.
+
+# A list of host/port pairs to use for establishing the initial connection to the Kafka cluster.
+bootstrap.servers=localhost:9092
+
+# unique name for the cluster, used in forming the Connect cluster group. Note that this must not conflict with consumer group IDs
+group.id=connect-cluster
+
+# The converters specify the format of data in Kafka and how to translate it into Connect data. Every Connect user will
+# need to configure these based on the format they want their data in when loaded from or stored into Kafka
+key.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+# Converter-specific settings can be passed in by prefixing the Converter's setting with the converter we want to apply
+# it to
+key.converter.schemas.enable=true
+value.converter.schemas.enable=true
+
+# Topic to use for storing offsets. This topic should have many partitions and be replicated and compacted.
+# Kafka Connect will attempt to create the topic automatically when needed, but you can always manually create
+# the topic before starting Kafka Connect if a specific topic configuration is needed.
+# Most users will want to use the built-in default replication factor of 3 or in some cases even specify a larger value.
+# Since this means there must be at least as many brokers as the maximum replication factor used, we'd like to be able
+# to run this example on a single-broker cluster and so here we instead set the replication factor to 1.
+offset.storage.topic=connect-offsets
+offset.storage.replication.factor=1
+#offset.storage.partitions=25
+
+# Topic to use for storing connector and task configurations; note that this should be a single partition, highly replicated,
+# and compacted topic. Kafka Connect will attempt to create the topic automatically when needed, but you can always manually create
+# the topic before starting Kafka Connect if a specific topic configuration is needed.
+# Most users will want to use the built-in default replication factor of 3 or in some cases even specify a larger value.
+# Since this means there must be at least as many brokers as the maximum replication factor used, we'd like to be able
+# to run this example on a single-broker cluster and so here we instead set the replication factor to 1.
+config.storage.topic=connect-configs
+config.storage.replication.factor=1
+
+# Topic to use for storing statuses. This topic can have multiple partitions and should be replicated and compacted.
+# Kafka Connect will attempt to create the topic automatically when needed, but you can always manually create
+# the topic before starting Kafka Connect if a specific topic configuration is needed.
+# Most users will want to use the built-in default replication factor of 3 or in some cases even specify a larger value.
+# Since this means there must be at least as many brokers as the maximum replication factor used, we'd like to be able
+# to run this example on a single-broker cluster and so here we instead set the replication factor to 1.
+status.storage.topic=connect-status
+status.storage.replication.factor=1
+#status.storage.partitions=5
+
+# Flush much faster than normal, which is useful for testing/debugging
+offset.flush.interval.ms=10000
+
+# List of comma-separated URIs the REST API will listen on. The supported protocols are HTTP and HTTPS.
+# Specify hostname as 0.0.0.0 to bind to all interfaces.
+# Leave hostname empty to bind to default interface.
+# Examples of legal listener lists: HTTP://myhost:8083,HTTPS://myhost:8084"
+#listeners=HTTP://:8083
+
+# The Hostname & Port that will be given out to other workers to connect to i.e. URLs that are routable from other servers.
+# If not set, it uses the value for "listeners" if configured.
+#rest.advertised.host.name=
+#rest.advertised.port=
+#rest.advertised.listener=
+
+# Set to a list of filesystem paths separated by commas (,) to enable class loading isolation for plugins
+# (connectors, converters, transformations). The list should consist of top level directories that include 
+# any combination of: 
+# a) directories immediately containing jars with plugins and their dependencies
+# b) uber-jars with plugins and their dependencies
+# c) directories immediately containing the package directory structure of classes of plugins and their dependencies
+# Examples: 
+# plugin.path=/usr/local/share/java,/usr/local/share/kafka/plugins,/opt/connectors,
+plugin.path=/usr/share/java,/Users/bdmbaa/Documents/work-space/runtime/confluent-7.0.1/share/confluent-hub-components
+
+```
 
 <br/>**ElasticSearch Sink connectors :**
 - Install ElasticSearch Sink Connectors : $ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
@@ -248,9 +371,11 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
     "type": "sink"
 }
 ```
-10. Make some update in database. Changes can be viewed from Kibana(KQL).
+10. Registered Connectors can be viewed from [control center](http://localhost:9021/)
+    ![screenshot](./docs/connectors_control_center.png)
+11. Make some update in database. Changes can be viewed from Kibana(KQL).
     ![screenshot](./docs/kibana-screenshot.png)
-11. We can also configure kibana dashboard for checking the changes.
+12. We can also configure kibana dashboard for checking the changes.
     ![screenshot](./docs/kibana-dashboard.png)
 
 ## Some command note on kafka
@@ -285,6 +410,6 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 |  **Kafka documentations along with the configurations :**|  https://kafka.apache.org/documentation/
 
 ## References
-
+https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#ce-quickstart
 https://docs.confluent.io/platform/current/connect/references/restapi.html
 https://docs.confluent.io/platform/current/connect/logging.html
