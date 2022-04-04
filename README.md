@@ -217,6 +217,7 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 **Prerequisite :**
 - Java 8 or Java 11
 - [Confluent Platform Installation](#confluent-platform-installation)
+- Docker
 
 <br/>**Debezium MySql Source connectors :**
 
