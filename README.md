@@ -2,8 +2,8 @@
 
 ## Topic Experimented
 - [Installation](#kafka-installation-on-mac)
-- [Producer - Consumer](#sample-architecture-diagram-of-endpoint)
-- [Producer - Consumer -avro- schema registry](#run-project-to-test-schema-registry)
+- [Producer - Consumer](#sample-architecture-diagram-of-endpoints)
+- [Producer - Consumer -avro- schema registry](#run-project-to-test-schema-registry-and-avro)
 - [Sample Integration Test On producer app](#sample-integration-test-on-producer-application)
 - [Producer Endpoints](#producer-application-endpoints)
 - [Kafka Connect](#kafka-connect)
@@ -41,7 +41,8 @@ drwxr-xr-x  2 jim jim 4096 May 19 21:36 src
 ```export PATH=$PATH:$CONFLUENT_HOME/bin```
 5. Test your installation by running the confluent command:
 ``confluent --help``
-## Sample architecture diagram of Endpoint [/producer/chat/chat] [/producer/generic/chat] : <br/><br/>
+## Sample architecture diagram of Endpoints
+<br/><br/>
 ![architecture](./docs/producer-consumer-architecture.png)
 
 
@@ -80,7 +81,7 @@ $ bin/kafka-server-start.sh config/server.properties
 - From consumer application console, we can see our consumer application consume that message from kafka topic \
    ![screenshot](./docs/consumer-console.png)
 
-## Run project to test schema registry(avro serializer and deserializer) 
+## Run project to test schema registry and avro 
 
 **Using Manually:** <br/><br/>
 Start the ZooKeeper service: \
