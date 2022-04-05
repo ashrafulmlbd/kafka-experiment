@@ -1,6 +1,5 @@
 # kafka-Experiment
 
-## Topic Experimented
 - [Installation](#kafka-installation-on-mac)
 - [Producer - Consumer](#sample-architecture-diagram-of-endpoints)
 - [Producer - Consumer -avro- schema registry](#run-project-to-test-schema-registry-and-avro)
@@ -9,7 +8,8 @@
 - [Kafka Connect](#kafka-connect)
 - [FileStream Connectors example](#filestream-connectors-example)
 - [MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector](#mysql-to-elasticsearch-using-debezium-kafka-and-confluent-elasticsearch-sink-connector)
-
+- [Useful commands](#some-command-note-on-kafka)
+- [References](#references)
 ## Kafka Installation on MAC
 
 Ref: https://kafka.apache.org/quickstart
