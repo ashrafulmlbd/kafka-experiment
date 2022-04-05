@@ -6,6 +6,7 @@
 - [Sample Integration Test On producer app](#sample-integration-test-on-producer-application)
 - [Producer Endpoints](#producer-application-endpoints)
 - [Kafka Connect](#kafka-connect)
+- [Sample Real time notification](#sample-real-time-notification)
 - [FileStream Connectors example](#filestream-connectors-example)
 - [MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector](#mysql-to-elasticsearch-using-debezium-kafka-and-confluent-elasticsearch-sink-connector)
 - [Useful commands](#some-command-note-on-kafka)
@@ -385,6 +386,19 @@ plugin.path=/usr/share/java,/Users/bdmbaa/Documents/work-space/runtime/confluent
     ![screenshot](./docs/kibana-screenshot.png)
 12. We can also configure kibana dashboard for checking the changes.
     ![screenshot](./docs/kibana-dashboard.png)
+
+
+## Sample Real time notification 
+<br/><br/>
+![screenshot](./docs/Real_time_notification.png)
+
+**Pre-requisite :**
+- Confluent platform
+- Java 8 or 11
+- NodeJs, npm
+
+**Run Project :**
+
 
 ## Some command note on kafka
 
