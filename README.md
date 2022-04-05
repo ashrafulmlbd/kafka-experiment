@@ -1,5 +1,15 @@
 # kafka-Experiment
 
+## Topic Experimented
+- [Installation](#kafka-installation-on-mac)
+- [Producer - Consumer](#sample-architecture-diagram-of-endpoint)
+- [Producer - Consumer -avro- schema registry](#run-project-to-test-schema-registry)
+- [Sample Integration Test On producer app](#sample-integration-test-on-producer-application)
+- [Producer Endpoints](#producer-application-endpoints)
+- [Kafka Connect](#kafka-connect)
+- [FileStream Connectors example](#filestream-connectors-example)
+- [MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector](#mysql-to-elasticsearch-using-debezium-kafka-and-confluent-elasticsearch-sink-connector)
+
 ## Kafka Installation on MAC
 
 Ref: https://kafka.apache.org/quickstart
@@ -31,7 +41,7 @@ drwxr-xr-x  2 jim jim 4096 May 19 21:36 src
 ```export PATH=$PATH:$CONFLUENT_HOME/bin```
 5. Test your installation by running the confluent command:
 ``confluent --help``
-## Sample architecture diagram of Endpoint: [/producer/chat/chat] [/producer/generic/chat] : <br/><br/>
+## Sample architecture diagram of Endpoint [/producer/chat/chat] [/producer/generic/chat] : <br/><br/>
 ![architecture](./docs/producer-consumer-architecture.png)
 
 
@@ -70,7 +80,7 @@ $ bin/kafka-server-start.sh config/server.properties
 - From consumer application console, we can see our consumer application consume that message from kafka topic \
    ![screenshot](./docs/consumer-console.png)
 
-## Run project to test schema registry(avro serializer and deserializer) :
+## Run project to test schema registry(avro serializer and deserializer) 
 
 **Using Manually:** <br/><br/>
 Start the ZooKeeper service: \
@@ -104,7 +114,7 @@ $ confluent local services start <br/> <br/>
 - From consumer application console, we can see our consumer application consume that message from kafka topic \
   ![screenshot](./docs/consumer-console.png)
 
-## Producer application Endpoints:
+## Producer application Endpoints
 | Method Type | Endpoint               | RequestBody                                                                           | Description                                               |
 |-------------|------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------|
 | POST        | /producer/chat         | {"message":"hi test ","messageId":10,"msgFrom":"ashraf","msgTo":"Dip"}                | Using ProducerService to send message to kafka            |
@@ -117,12 +127,6 @@ $ confluent local services start <br/> <br/>
 - $ cd producer/
 - $ mvn test
 
-## Topic Experimented
-- Producer
-- Consumer
-- Avro
-- Schema Registry
-
 ## Kafka connect
 
 Kafka Connect is a framework for connecting Kafka with external systems such as databases, key-value stores, search indexes, and file systems, using so-called Connectors.
@@ -132,7 +136,8 @@ A source connector collects data from a system. Source systems can be entire dat
 
 A sink connector delivers data from Kafka topics into other systems, which might be indexes such as Elasticsearch, batch systems such as Hadoop, or any kind of database. <br/> <br/>
 
-**FileStream Connectors example :** <br/><br/>
+## FileStream Connectors example 
+<br/><br/>
 ![screenshot](./docs/filesource-sink.png)
 
 **Source Connector Configuration :** <br/>
@@ -209,7 +214,8 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> sour
 ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt <br/>
 <br/><br/>
 
-## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector : <br/> <br/>
+## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector 
+<br/> <br/>
 ![screenshot](./docs/mysql-elk.drawio.png)
 
 <br/>
