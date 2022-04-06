@@ -218,6 +218,7 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 
 ## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector 
 <br/> <br/>
+
 ![screenshot](./docs/mysql-elk.drawio.png)
 
 <br/>
@@ -393,11 +394,98 @@ plugin.path=/usr/share/java,/Users/bdmbaa/Documents/work-space/runtime/confluent
 ![screenshot](./docs/Real_time_notification.png)
 
 **Pre-requisite :**
-- Confluent platform
+- [Confluent Platform Installation](#confluent-platform-installation)
 - Java 8 or 11
 - NodeJs, npm
+- Docker
 
 **Run Project :**
+- Install ElasticSearch Sink Connectors if not exist : 
+```
+$ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
+```
+- Confluent platform start : 
+```
+$ confluent local services start 
+```
+- Start elasticSearch and kibana services 
+```
+$ cd kafka-connect/elasticsearch
+$ docker-compose up -d
+```
+- Run notification-producer app : 
+```
+  $ cd realtime-notification-service/notification-producer
+  $ mvn spring-boot:run -DskipTests
+```
+- Run notification-consumer app :
+```
+$ cd realtime-notification-service/notification-consumer
+$ mvn spring-boot:run -DskipTests
+```
+
+- Register ElasticSearch Sink connector configuration with connect via POST method
+```
+URL : localhost:8083/connectors
+Method : POST
+BODY :
+{
+    "name": "elastic-sink-notification",
+    "config": {
+    "connector.class":
+    "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "notification",
+    "connection.url": "http://localhost:9200",
+	"value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "schema.ignore": "true",
+    "key.ignore": "true",
+    "type.name": "notification"
+    }
+}
+```
+- Run angular notification UI application
+```
+$ cd realtime-notification-service/notification-ui
+$ npm install
+$ npm start
+
+Browse :
+localhost:4200
+```
+- Produce some notification
+```
+Endpoint : http://localhost:8082/notification/send
+Method : POST
+Header : 
+Content-Type: application/json
+
+Body: 
+{
+	"id": 1,
+	"content": "Testing",
+	"type":"EMAIL"
+}
+```
+- Notification viewing from kibana
+```
+Browse : localhost:5601
+Select devtool and execute following KQL:
+GET /notification/_search 
+{
+    "query": {
+        "match_all": {}
+    }
+}
+```
+![screenshot](./docs/kibana-kql.jpeg)
+
+- Notification view from UI application(Angular)
+```
+Browse : localhost:4200
+```
+![screenshot](./docs/ui-notification.jpeg)
 
 
 ## Some command note on kafka
