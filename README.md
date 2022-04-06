@@ -145,27 +145,34 @@ A sink connector delivers data from Kafka topics into other systems, which might
 **Source Connector Configuration :** <br/>
 For the source connector, the reference configuration is available at $CONFLUENT_HOME/etc/kafka/connect-file-source.properties:
 
+```
 name=local-file-source
 connector.class=FileStreamSource
 tasks.max=1
 topic=connect-test
 file=connect-data-test.txt
+```
+
 
 
 For this to work then, let's create a basic file with some content:
+```
 echo -e "Dip\nashraf\nmonstarlab\nkafka\ntesting\n" > $CONFLUENT_HOME/connect-data-test.txt
+```
 
 
 
 **Sink Connector Configuration :**
 
 For our sink connector, we'll use the reference configuration at $CONFLUENT_HOME/etc/kafka/connect-file-sink.properties:
-
+```
 name=local-file-sink
 connector.class=FileStreamSink
 tasks.max=1
 file=connecttest.sink.txt
 topics=connect-test
+```
+
 
 
 
@@ -175,6 +182,7 @@ Finally, we have to configure the Connect worker, which will integrate our two c
 
 For that, we can use $CONFLUENT_HOME/etc/kafka/connect-standalone.properties:
 
+```
 bootstrap.servers=localhost:9092
 key.converter=org.apache.kafka.connect.json.JsonConverter
 value.converter=org.apache.kafka.connect.json.JsonConverter
@@ -183,37 +191,50 @@ value.converter.schemas.enable=false
 offset.storage.file.filename=/tmp/connect.offsets
 offset.flush.interval.ms=10000
 plugin.path=share/filestream-connectors
+```
+
 
 
 **Kafka Connect in Standalone Mode :**
 
 And with that, we can start our first connector setup:
 
-$CONFLUENT_HOME/bin/connect-standalone \
-$CONFLUENT_HOME/etc/kafka/connect-standalone.properties \
-$CONFLUENT_HOME/etc/kafka/connect-file-source.properties \
+```
+$CONFLUENT_HOME/bin/connect-standalone $CONFLUENT_HOME/etc/kafka/connect-standalone.properties 
+$CONFLUENT_HOME/etc/kafka/connect-file-source.properties 
 $CONFLUENT_HOME/etc/kafka/connect-file-sink.properties
+```
+
 
 
 we can inspect the content of the topic using the command line:
 
+```
 $CONFLUENT_HOME/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic connect-test --from-beginning
 
 {"schema":{"type":"string","optional":false},"payload":"foo"}
 {"schema":{"type":"string","optional":false},"payload":"bar"}
 
+```
+
 
 And, if we have a look at the folder $CONFLUENT_HOME, we can see that a file test.sink.txt was created here:
 
+```
 cat $CONFLUENT_HOME/connecttest.sink.txt
 foo
 bar
+```
+
 
 <br/> Write data on connect-data-test: <br/>
-ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "foo\nbar\n" >> source-log.txt <br/>
-ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kaka\nvalo\n" >> source-log.txt <br/>
-ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> source-log.txt <br/>
-ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt <br/>
+
+```
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "foo\nbar\n" >> source-log.txt 
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kaka\nvalo\n" >> source-log.txt 
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "kafka\nvalo\nchele\n" >> source-log.txt 
+ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >> source-log.txt 
+```
 <br/><br/>
 
 ## MySQL to ElasticSearch using Debezium, Kafka, and Confluent ElasticSearch Sink Connector 
@@ -231,10 +252,57 @@ ubuntu@schema-registry:~/confluent-7.0.1$ echo -e "trying\ncarries\nreturn\r" >>
 <br/>**Debezium MySql Source connectors :**
 
 - Install debezium mysql connector : 
-```$ confluent-hub install debezium/debezium-connector-mysql:latest```
+```
+$ confluent-hub install debezium/debezium-connector-mysql:latest
+$ cd $CONFLUENT_HOME/etc/kafka/
+$ cp connect-distributed.properties debezium.properties
+```
 
-- $ cd $CONFLUENT_HOME/etc/kafka/
-- ```$ cp connect-distributed.properties debezium.properties```
+**Mysql docker-compose:**
+```
+version: '3'
+
+services:
+  mysql-db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: inventory
+    volumes:
+      - ./mysql.cnf:/etc/mysql/my.cnf
+      - ./data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 3307:3306
+```
+
+**ElasticSearch/kibana Docker compose :**
+```
+version: '3.0'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    ports:
+      - 9200:9200
+      - 9300:9300
+    restart: on-failure
+    environment:
+      discovery.type: single-node
+    volumes:
+        - ./es-data:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    restart: on-failure
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    volumes:
+      - ./kibana-data:/usr/share/kibana/data
+```
 
 <br/>**debezium.properties :**
 ```##
@@ -330,14 +398,34 @@ plugin.path=/usr/share/java,/Users/bdmbaa/Documents/work-space/runtime/confluent
 ```
 
 <br/>**ElasticSearch Sink connectors :**
-- Install ElasticSearch Sink Connectors : $ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
+- Install ElasticSearch Sink Connectors : 
+```
+$ confluent-hub install confluentinc/kafka-connect-elasticsearch:11.1.8
+```
 
 <br/>**Test Mysql source and ElasticSearch Sink connectors :**
-- Start confluent platform : $ confluent local services start 
-- Stop Connect service : $ confluent local services connect stop
-- Start connect : $ bin/connect-distributed etc/kafka/debezium.properties
-- Start Mysql container(From kafka-connect/mysql directory) :  $ docker-compose up -d
-- Start elasticsearch container(From kafka-connect/elasticsearch directory) : $ docker-compose up -d
+- Start confluent platform : 
+```
+$ confluent local services start 
+```
+- Stop Connect service : 
+```
+$ confluent local services connect stop
+```
+- Start connect : 
+```
+$ bin/connect-distributed etc/kafka/debezium.properties
+```
+- Start Mysql container(From kafka-connect/mysql directory) :  
+```
+$ cd kafka-connect/mysql
+$ docker-compose up -d
+```
+- Start elasticsearch container(From kafka-connect/elasticsearch directory) : 
+```
+$ cd kafka-connect/elasticsearch
+$ docker-compose up -d
+```
 - Registering Mysql Source connector configuration via Rest API(Make a post request)
 
 ```
@@ -383,9 +471,9 @@ plugin.path=/usr/share/java,/Users/bdmbaa/Documents/work-space/runtime/confluent
 ```
 10. Registered Connectors can be viewed from [control center](http://localhost:9021/)
     ![screenshot](./docs/connectors_control_center.png)
-11. Make some update in database. Changes can be viewed from Kibana(KQL).
+11. Make some update in database. Changes can be viewed from Kibana(KQL)(localhost:5601.
     ![screenshot](./docs/kibana-screenshot.png)
-12. We can also configure kibana dashboard for checking the changes.
+12. We can also configure kibana dashboard for checking the changes(localhost:5601)
     ![screenshot](./docs/kibana-dashboard.png)
 
 
